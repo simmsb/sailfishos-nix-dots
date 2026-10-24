@@ -5,6 +5,8 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     home-manager.url = "github:nix-community/home-manager";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    nix-index-database.url = "github:nix-community/nix-index-database";
+    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs@{
@@ -32,15 +34,6 @@
           };
           programs.ripgrep.enable = true;
           programs.fd.enable = true;
-          programs.jujutsu = {
-            enable = true;
-            settings = {
-              user = {
-                name = "Ben Simms";
-                email = "ben@bensimms.moe";
-              };
-            };
-          };
           programs.git = {
             enable = true;
             settings = {
@@ -50,6 +43,7 @@
               };
             };
           };
+          programs.nix-index-database.comma.enable = true;
 
           home.packages = with pkgs; [
             just
@@ -85,7 +79,10 @@
             inputs.self.homeModules.nushell
             inputs.self.homeModules.cli
             inputs.self.homeModules.bashrc
-            ./mkAbsoluteSymlink.nix
+            inputs.nix-index-database.homeModules.default
+            ./modules
+            ./services.nix
+            ./jujutsu.nix
             {
               home.username = "defaultuser";
               home.homeDirectory = "/home/defaultuser";
